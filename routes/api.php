@@ -170,7 +170,11 @@ Route::post('/create-many-bo', [AppRfdBoController::class, 'createManyBo']);
 
 Route::post('/craete-many-doc', [AppRfdDocController::class, 'craeteManyDoc']);
 
-Route::post('/semakan-wtd', [RefBoMasterController::class, 'semakanWtd']);
-
 // Maklumat WTD yang di pohon/Maklumat WTD yang dipilih disalin daripada table REF_BO_MASTER.
 // Route::get('/wang-tak-dituntut', [AppRfdBoController::class, 'index']);
+
+//Baru
+
+Route::post('/semakan-wtd', [RefBoMasterController::class, 'semakanWtd']);
+
+// Route::post('/permohonan-wtd', [AppRfdInfoController::class, 'permohonanWtd']);

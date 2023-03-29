@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppRfdBo;
+use App\Models\RunningNoUma;
 use Illuminate\Http\Request;
 
 class AppRfdBoController extends Controller
@@ -82,6 +83,10 @@ class AppRfdBoController extends Controller
     public function createManyBo(Request $request)
     {
         foreach ($request->bo as $bo) {
+            $runningNo = RunningNoUma::first()->current;
+            $runningNo = sprintf('%05d', $runningNo);
+            $today = now()->format('dmy');
+            $otherRefNo = "UMA7" . $today . "M" . $runningNo;
             $rfdBo = AppRfdBo::create([
                 "amount" => $bo['amount'] ?? null,
                 "boMasterId" => $bo['boMasterId'] ?? null,
@@ -101,7 +106,7 @@ class AppRfdBoController extends Controller
                 "name" => $bo['name'] ?? null,
                 "new_ic_number" => $bo['new_ic_number'] ?? null,
                 "old_ic_number" => $bo['old_ic_number'] ?? null,
-                "other_ref_no" => $bo['other_ref_no'] ?? null,
+                "other_ref_no" => $otherRefNo,
                 "selected" => $bo['selected'] ?? null,
                 "status" => $bo['status'] ?? null,
                 "status_date" => $bo['status_date'] ?? null,
@@ -111,6 +116,10 @@ class AppRfdBoController extends Controller
             ]);
 
             $updatedRfdBo[] = $rfdBo;
+            $runningNo++;
+            RunningNoUma::first()->update([
+                'current' => $runningNo,
+            ]);
 
         }
 

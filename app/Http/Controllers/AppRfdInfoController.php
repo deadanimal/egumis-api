@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppRfdBo;
 use App\Models\AppRfdInfo;
 use App\Models\AppRfdPayee;
+use App\Models\RefBoMaster;
 use Illuminate\Http\Request;
 
 class AppRfdInfoController extends Controller
@@ -57,8 +59,10 @@ class AppRfdInfoController extends Controller
                 'Error' => "Data Not Found",
             ];
         }
-
+        $rfdPayee = AppRfdPayee::where('refund_info_id', $info->id)->delete();
+        $rfdBo = AppRfdBo::where('refund_info_id', $info->id)->delete();
         $info->delete();
+
         return [
             'Delete' => 'Successful',
         ];
@@ -300,4 +304,24 @@ class AppRfdInfoController extends Controller
 
     }
 
+    public function permohonanWtd(Request $request)
+    {
+        if ($request->boMaster_id) {
+            $boMaster = RefBoMaster::find($request->boMaster_id);
+
+            // $appRfdInfo= AppRfdInfo::where('');
+            //simpan data
+
+            //App RFD BO, Sec User, Ref Express Wtd Type, APp rfd Joint, App Rfd Status
+            // simpan ni termasuk permohonan skali
+
+        }
+        if ($request->boJoint_id) {
+            // $appRfdInfo=   AppRfdInfo::where('');
+
+        }
+
+        //cheack sama ada simpan borang
+
+    }
 }

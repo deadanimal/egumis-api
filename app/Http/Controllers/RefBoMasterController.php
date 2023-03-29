@@ -114,12 +114,22 @@ class RefBoMasterController extends Controller
     {
         $maxSearch = AppSystemConfig::where('code', 'SRCMAX')->first();
 
-        $searchedToday = AppRfdSearchTrx::whereDate('search_date', now())->get();
+        if (!$request->ic_user) {
+            return [
+                'code' => 404,
+                "message" => "Sila Masukkan data ic_user",
+            ];
+        }
 
+        $searchedToday = AppRfdSearchTrx::whereDate('search_date', now())->where('identity_number', $request->ic_user)->get();
         if ($maxSearch->enable == 1) {
             if ($maxSearch->int_value != 0) {
-                if ($searchedToday > $maxSearch) {
-                    return "Carian Melebihi Had Carian Harian";
+                if (count($searchedToday) >= $maxSearch->int_value) {
+                    return [
+                        'code' => 403,
+                        "message" => "Carian Melebihi Had Carian Harian",
+                        "bil_carian_user" => count($searchedToday),
+                    ];
                 }
             }
         }
@@ -175,24 +185,9 @@ class RefBoMasterController extends Controller
             'RefBoMaster' => $BoMaster,
             'RefBoJoint' => $BoJoint,
             'User' => $user,
+            "bil_carian_user" => count($searchedToday),
         ];
 
-        // switch ($request->jenis) {
-        //     case '1':
-        //         $carian = RefBoMaster::with('appRfdBo.appRfdInfo')->where('old_ic_number', request('ic_carian'))
-        //             ->orWhere('new_ic_number', request('ic_carian'))
-        //             ->get();
-        //         break;
-        //     case '2':
-        //         $carian = RefBoJoint::where('old_ic_number', request('ic_carian'))
-        //             ->orWhere('new_ic_number', request('ic_carian'))
-        //             ->get();
-        //         break;
-
-        //     default:
-        //         return 'Sila masukkan data jenis, 1 untuk satu penama.  2 untuk lebih dari satu penama';
-        //         break;
-        // }
-
     }
+
 }
