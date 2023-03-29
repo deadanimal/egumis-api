@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppRfdDoc;
+use App\Models\AppSystemConfig;
 use Illuminate\Http\Request;
 
 class AppRfdDocController extends Controller
@@ -76,18 +77,32 @@ class AppRfdDocController extends Controller
 
     public function craeteManyDoc(Request $request)
     {
+        $getDocConfig = AppSystemConfig::where('code', 'RFDDOC')->first();
+
         foreach ($request->doc as $doc) {
+
+            if ($getDocConfig->enable == 1) {
+                $type = explode(',', $getDocConfig->str_value);
+                if (!in_array($doc['file_name']->extension(), $type)) {
+                    return [
+                        'code' => '403',
+                        'message' => "File type " . $doc['file_name']->extension() . " is not allowed in APP SYSTEM CONFIG",
+                    ];
+                }
+
+            }
+
             $rfdDoc = AppRfdDoc::create([
                 "claim_doc_code" => $doc['claim_doc_code'] ?? null,
                 "created_by" => $doc['created_by'] ?? null,
-                "created_date" => $doc['created_date'] ?? null,
+                "created_date" => now(),
                 "description" => $doc['description'] ?? null,
                 "descriptionMy" => $doc['descriptionMy'] ?? null,
                 "doc_category" => $doc['doc_category'] ?? null,
                 // "file_name" => $doc['file_name'] ?? null,
                 "mandatory" => $doc['mandatory'] ?? null,
                 "modified_by" => $doc['modified_by'] ?? null,
-                "modified_date" => $doc['modified_date'] ?? null,
+                "modified_date" => now(),
                 "name" => $doc['name'] ?? null,
                 "name_my" => $doc['name_my'] ?? null,
                 "recordId" => $doc['recordId'] ?? null,
@@ -99,7 +114,7 @@ class AppRfdDocController extends Controller
 
             if (isset($doc['file_name'])) {
                 $url = $doc['file_name']->store(
-                    'doc', 'public'
+                    'doc/' . $rfdDoc->ref_no, 'public'
                 );
                 $rfdDoc->update([
                     'file_name' => 'storage/' . $url,
