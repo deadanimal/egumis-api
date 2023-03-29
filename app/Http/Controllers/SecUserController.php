@@ -4,17 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSecUserRequest;
 use App\Http\Requests\UpdateSecUserRequest;
+use App\Mail\EgumisEmail;
+use App\Models\AppEmailTemplate;
 use App\Models\AppRfdSearchTrx;
 use App\Models\SecRole;
 use App\Models\SecUser;
 use App\Models\SecUserEntity;
 use App\Models\SecUserRole;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpFoundation\Response;
 
 class SecUserController extends Controller
 {
+
+    public function sendEmail()
+    {
+        $mailFormat = AppEmailTemplate::where('code', 'ETRPWD')->first();
+        $email = 'test@gmail.com';
+        $content = str_replace('${fullName}', 'Amirul', $mailFormat->template_content_my);
+        $content = str_replace('${userName}', 'username', $content);
+        $content = str_replace('${newPassword}', 'newpass', $content);
+
+        $mailData = [
+            'name' => $mailFormat->name_my,
+            'template_content' => $content,
+        ];
+
+        Mail::to($email)->send(new EgumisEmail($mailData));
+
+        return response()->json([
+            'message' => 'Email has been sent.',
+        ], Response::HTTP_OK);
+    }
+
     public function login(Request $request)
     {
         request()->validate([
@@ -131,6 +155,22 @@ class SecUserController extends Controller
                 'user_id' => $user->id,
                 'role_id' => $role->id,
             ]);
+
+            //Sent Email
+            $mailFormat = AppEmailTemplate::where('code', 'ETUSRC')->first();
+            $email = $user->email;
+
+            $content = str_replace('${user.fullName}', $user->username, $mailFormat->template_content_my);
+            $content = str_replace('${user.username}', $user->full_name, $content);
+            $content = str_replace('${tempPassword}', $request->password, $content);
+
+            $mailData = [
+                'name' => $mailFormat->name_my,
+                'template_content' => $content,
+            ];
+
+            Mail::to($email)->send(new EgumisEmail($mailData));
+
         }
 
         return response()->json($user);
@@ -204,33 +244,34 @@ class SecUserController extends Controller
         $user = SecUser::where('username', request('username'))->first();
         $code = random_int(100000, 999999);
         $new_password = "egumis" . $code;
-        if ($user === null) {
+        if (!$user) {
             return [
                 'Error' => "Username was not registered",
             ];
         }
 
-        // try {
-        //     $mess = 'Password reset successful. Please use this new pasword : ' . $new_password;
-        //     $response = Http::withHeaders([
-        //         'Content-Type' => 'application/json',
-        //         'Authorization' => 'FlIJxKC0DQ1RF5af9zKL95bsbQ6hEADEDBRO0fnBoFs=',
-        //     ])->post('https://mysmsdvsb.azurewebsites.net/api/messages', [
-        //         'keyword' => 'e-Sisper',
-        //         'message' => $mess,
-        //         'msisdn' => request('username'),
-        //     ]);
-        // } catch (\Exception$e) {
-        //     return '400';
-        // }
+        $salt = 123;
+        $generatedPassword = $new_password . "{" . $user->username . $salt . "}";
+        $hashedPassword = md5($generatedPassword);
 
-        if (isset($response)) {
-            $user->update([
-                'password' => Hash::make($new_password),
-            ]);
-        }
+        $user->update([
+            'password' => $hashedPassword,
+        ]);
 
-        return response()->json('Password Updated, New password is ' . $new_password);
+        $mailFormat = AppEmailTemplate::where('code', 'ETRPWD')->first();
+        $email = $user->email;
+        $content = str_replace('${fullName}', $user->full_name, $mailFormat->template_content_my);
+        $content = str_replace('${userName}', $user->username, $content);
+        $content = str_replace('${newPassword}', $new_password, $content);
+
+        $mailData = [
+            'name' => $mailFormat->name_my,
+            'template_content' => $content,
+        ];
+
+        Mail::to($email)->send(new EgumisEmail($mailData));
+
+        return response()->json($new_password);
     }
 
     public function ChangePassword(Request $request, SecUser $user)
