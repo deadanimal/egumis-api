@@ -121,20 +121,35 @@ class RefBoMasterController extends Controller
             ];
         }
 
-        $searchedToday = AppRfdSearchTrx::whereDate('search_date', now())->where('identity_number', $request->ic_user)->get();
+        // $searchedToday = AppRfdSearchTrx::whereDate('search_date', now())->where('identity_number', $request->ic_user)->get();
+
+        $user = SecUser::where('identity_number', $request->ic_user)->first();
+        $dateUser = explode(' ', $user->search_date);
+        if ($dateUser[0] != today()->format('Y-m-d')) {
+            $user->update([
+                'search_date' => now(),
+                'search_count' => 0,
+            ]);
+        }
+
+        $searchedToday = $user->search_count;
+
         if ($maxSearch->enable == 1) {
             if ($maxSearch->int_value != 0) {
-                if (count($searchedToday) >= $maxSearch->int_value) {
+                if ($searchedToday >= $maxSearch->int_value) {
                     return [
                         'code' => 403,
                         "message" => "Carian Melebihi Had Carian Harian",
-                        "bil_carian_user" => count($searchedToday),
+                        "bil_carian_user" => $searchedToday,
                     ];
                 }
             }
         }
 
-        $user = SecUser::where('identity_number', $request->ic_user)->first();
+        $searchedToday++;
+        $user->update([
+            'search_count' => $searchedToday,
+        ]);
 
         $BoMaster = RefBoMaster::with('appRfdBo.appRfdInfo.AppRfdStatus')->where('old_ic_number', request('ic_carian'))
             ->orWhere('new_ic_number', request('ic_carian'))
@@ -185,7 +200,7 @@ class RefBoMasterController extends Controller
             'RefBoMaster' => $BoMaster,
             'RefBoJoint' => $BoJoint,
             'User' => $user,
-            "bil_carian_user" => count($searchedToday),
+            "bil_carian_user" => $searchedToday,
         ];
 
     }
