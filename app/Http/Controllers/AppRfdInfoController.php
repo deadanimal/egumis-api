@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EgumisEmail;
+use App\Models\AppEmailTemplate;
 use App\Models\AppRfdBo;
 use App\Models\AppRfdInfo;
 use App\Models\AppRfdPayee;
 use App\Models\RefBoMaster;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AppRfdInfoController extends Controller
 {
@@ -47,6 +50,19 @@ class AppRfdInfoController extends Controller
         }
 
         $info->update($request->except(['id', 'SEC_USER_ID']));
+
+        if ($info->status == '04') {
+            $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
+            $email = 'noramirulnordin@gmail.com';
+            $content = str_replace('${claimantName}', $info->claimantName, $mailFormat->template_content_my);
+            $mailData = [
+                'name' => $mailFormat->name_my,
+                'template_content' => $content,
+            ];
+
+            Mail::to($email)->send(new EgumisEmail($mailData));
+        }
+
         return response()->json($info);
 
     }

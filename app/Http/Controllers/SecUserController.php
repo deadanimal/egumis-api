@@ -21,11 +21,11 @@ class SecUserController extends Controller
 
     public function sendEmail()
     {
-        $mailFormat = AppEmailTemplate::where('code', 'ETRPWD')->first();
-        $email = 'test@gmail.com';
-        $content = str_replace('${fullName}', 'Amirul', $mailFormat->template_content_my);
-        $content = str_replace('${userName}', 'username', $content);
-        $content = str_replace('${newPassword}', 'newpass', $content);
+        $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
+        $email = 'noramirulnordin@gmail.com';
+        // return $mailFormat->template_content_my;
+        $content = str_replace('${claimantName}', 'Amirul', $mailFormat->template_content_my);
+        // $content = str_replace('${newPassword}', 'newpass', $content);
 
         $mailData = [
             'name' => $mailFormat->name_my,
