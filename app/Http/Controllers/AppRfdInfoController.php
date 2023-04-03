@@ -8,6 +8,7 @@ use App\Models\AppRfdBo;
 use App\Models\AppRfdInfo;
 use App\Models\AppRfdPayee;
 use App\Models\RefBoMaster;
+use App\Models\SecUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -53,7 +54,7 @@ class AppRfdInfoController extends Controller
 
         if ($info->status == '04') {
             $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
-            $email = 'noramirulnordin@gmail.com';
+            $email = SecUser::where('id', $info->user_id)->first()->email;
             $content = str_replace('${claimantName}', $info->claimantName, $mailFormat->template_content_my);
             $mailData = [
                 'name' => $mailFormat->name_my,
