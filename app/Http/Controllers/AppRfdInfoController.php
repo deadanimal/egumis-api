@@ -7,7 +7,9 @@ use App\Models\AppEmailTemplate;
 use App\Models\AppRfdBo;
 use App\Models\AppRfdInfo;
 use App\Models\AppRfdPayee;
+use App\Models\AppRfdStatus;
 use App\Models\RefBoMaster;
+use App\Models\RunningNoUma;
 use App\Models\SecUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -22,9 +24,37 @@ class AppRfdInfoController extends Controller
 
     public function store(Request $request)
     {
+        $runningNo = RunningNoUma::first()->current;
+        $runningNo = sprintf('%05d', $runningNo);
+        $today = now()->format('dmy');
+        $ref_no = "UMA7" . $today . "M" . $runningNo;
+        $request['ref_no'] = $ref_no;
         $info = AppRfdInfo::create($request->all());
-        return response()->json($info);
 
+        $user = SecUser::find($request->user_id);
+        if (!$user) {
+            return [
+                'code' => 404,
+                'massage' => 'user_id ' . $request->user_id . ' not found',
+            ];
+        }
+        $status = AppRfdStatus::create([
+            "created_by" => $user->username,
+            "created_date" => now(),
+            "description" => 'Permohonan Dicipta',
+            "file_name" => null,
+            "file_ref_no" => $info->ref_no,
+            "idd_file_name" => null,
+            "modified_by" => $user->username,
+            "modified_date" => now(),
+            "status" => "01",
+            "status_date" => now(),
+            "rfd_id" => $info->id,
+            "status_description" => null,
+            "verify_by" => null,
+        ]);
+        $info['AppRfdStatus'] = $status;
+        return response()->json($info);
     }
 
     public function show($id)
@@ -50,7 +80,32 @@ class AppRfdInfoController extends Controller
             ];
         }
 
-        $info->update($request->except(['id', 'SEC_USER_ID']));
+        $info->update($request->except(['id']));
+
+        if ($info->status != '01') {
+            $user = SecUser::find($info->user_id);
+            if (!$user) {
+                return [
+                    'code' => 404,
+                    'massage' => 'user_id ' . $request->user_id . ' not found',
+                ];
+            }
+            $status = AppRfdStatus::create([
+                "created_by" => $user->username,
+                "created_date" => now(),
+                "description" => 'Permohonan Dicipta',
+                "file_name" => null,
+                "file_ref_no" => $info->ref_no,
+                "idd_file_name" => null,
+                "modified_by" => $user->username,
+                "modified_date" => now(),
+                "status" => $info->status,
+                "status_date" => now(),
+                "rfd_id" => $info->id,
+                "status_description" => null,
+                "verify_by" => null,
+            ]);
+        }
 
         if ($info->status == '04') {
             $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
@@ -60,7 +115,6 @@ class AppRfdInfoController extends Controller
                 'name' => $mailFormat->name_my,
                 'template_content' => $content,
             ];
-
             Mail::to($email)->send(new EgumisEmail($mailData));
         }
 
@@ -339,6 +393,21 @@ class AppRfdInfoController extends Controller
         }
 
         //cheack sama ada simpan borang
+
+    }
+
+    public function statusByInfoId($id)
+    {
+        $info = AppRfdInfo::find($id);
+        if (!$info) {
+            return [
+                'code' => 404,
+                'message' => 'RFD Info ID ' . $id . ' Not Found',
+            ];
+        }
+
+        $status = AppRfdStatus::where('rfd_id', $id)->get();
+        return response()->json($status);
 
     }
 }

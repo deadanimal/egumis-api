@@ -173,3 +173,5 @@ Route::post('/craete-many-doc', [AppRfdDocController::class, 'craeteManyDoc']);
 Route::post('/semakan-wtd', [RefBoMasterController::class, 'semakanWtd']);
 
 Route::get('/demoEmail', [SecUserController::class, 'sendEmail']);
+
+Route::get('/status-by-info-id/{id}', [AppRfdInfoController::class, 'statusByInfoId']);
