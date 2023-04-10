@@ -107,7 +107,7 @@ class AppRfdBoController extends Controller
                 "new_ic_number" => $bo['new_ic_number'] ?? null,
                 "old_ic_number" => $bo['old_ic_number'] ?? null,
                 "other_ref_no" => $otherRefNo,
-                "selected" => $bo['selected'] ?? null,
+                "selected" => 1,
                 "status" => $bo['status'] ?? null,
                 "status_date" => $bo['status_date'] ?? null,
                 "unclaimed_amount" => $bo['unclaimed_amount'] ?? null,

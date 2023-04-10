@@ -29,6 +29,7 @@ class AppRfdInfoController extends Controller
         $today = now()->format('dmy');
         $ref_no = "UMA7" . $today . "M" . $runningNo;
         $request['ref_no'] = $ref_no;
+        $request['email_status'] = "TRUE";
         $info = AppRfdInfo::create($request->all());
 
         $user = SecUser::find($request->user_id);
@@ -79,7 +80,6 @@ class AppRfdInfoController extends Controller
                 'Error' => "Data Not Found",
             ];
         }
-
         $info->update($request->except(['id']));
 
         if ($info->status != '01') {
@@ -110,6 +110,19 @@ class AppRfdInfoController extends Controller
         if ($info->status == '04') {
             $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
             $email = SecUser::where('id', $info->user_id)->first()->email;
+            // $email = "sarahnabilah.ct@gmail.com";
+            $content = str_replace('${claimantName}', $info->claimantName, $mailFormat->template_content_my);
+            $mailData = [
+                'name' => $mailFormat->name_my,
+                'template_content' => $content,
+            ];
+            Mail::to($email)->send(new EgumisEmail($mailData));
+        }
+
+        if ($info->status == '06') {
+            $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
+            // $email = SecUser::where('id', $info->user_id)->first()->email;
+            $email = "sarahnabilah.ct@gmail.com";
             $content = str_replace('${claimantName}', $info->claimantName, $mailFormat->template_content_my);
             $mailData = [
                 'name' => $mailFormat->name_my,
@@ -127,9 +140,11 @@ class AppRfdInfoController extends Controller
         $info = AppRfdInfo::find($id);
         if ($info === null) {
             return [
-                'Error' => "Data Not Found",
+                'code' => 404,
+                'massage' => "Data Not Found",
             ];
         }
+        $rfdStatus = AppRfdStatus::where('rfd_id', $info->id)->delete();
         $rfdPayee = AppRfdPayee::where('refund_info_id', $info->id)->delete();
         $rfdBo = AppRfdBo::where('refund_info_id', $info->id)->delete();
         $info->delete();

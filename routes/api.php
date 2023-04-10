@@ -48,6 +48,8 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::get('/demoEmail', [SecUserController::class, 'sendEmail']);
+Route::get('/test', [SecUserController::class, 'test']);
 
 Route::apiResources([
     // Maklumat pengguna sistem
@@ -171,7 +173,5 @@ Route::post('/create-many-bo', [AppRfdBoController::class, 'createManyBo']);
 Route::post('/craete-many-doc', [AppRfdDocController::class, 'craeteManyDoc']);
 
 Route::post('/semakan-wtd', [RefBoMasterController::class, 'semakanWtd']);
-
-Route::get('/demoEmail', [SecUserController::class, 'sendEmail']);
 
 Route::get('/status-by-info-id/{id}', [AppRfdInfoController::class, 'statusByInfoId']);

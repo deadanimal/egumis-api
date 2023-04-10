@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppRfdDoc;
+use App\Models\AppRfdInfo;
 use App\Models\AppSystemConfig;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,6 @@ class AppRfdDocController extends Controller
     public function index()
     {
         return response()->json(AppRfdDoc::all());
-
     }
 
     public function store(Request $request)
@@ -92,6 +92,11 @@ class AppRfdDocController extends Controller
 
             }
 
+            if ($doc['refundId']) {
+                $info = AppRfdInfo::find($doc['refundId']);
+                $doc['ref_no'] = $info->ref_no;
+            }
+
             $rfdDoc = AppRfdDoc::create([
                 "claim_doc_code" => $doc['claim_doc_code'] ?? null,
                 "created_by" => $doc['created_by'] ?? null,
@@ -122,6 +127,24 @@ class AppRfdDocController extends Controller
             }
 
             $createdRfdDoc[] = $rfdDoc;
+
+            // $rfdDoc = AppRfdDoc::first();
+            // $rfdInfo = AppRfdInfo::find($rfdDoc->refundId);
+            // $user = SecUser::find($rfdInfo->user_id);
+            // $name = $user->full_name;
+            // $t_claim = "RM" . $rfdInfo->total_claim;
+            // $eft = $rfdInfo->ref_no;
+            // $mailFormat = AppEmailTemplate::where('code', 'ETSUBQ')->first();
+            // $email = 'sarahnabilah.ct@gmail.com';
+            // $content = str_replace('${submitterName}', $name, $mailFormat->template_content_my);
+            // $content = str_replace('${subInfo.eftNumber}', $eft, $content);
+            // $content = str_replace('${subInfo.totalAmt}', $t_claim, $content);
+            // $content = str_replace('<a href="http://${egumisURL}" target="_blank">eGUMIS</a>', 'Aplikasi Mobile eGUMIS', $content);
+            // $mailData = [
+            //     'name' => $mailFormat->name_my,
+            //     'template_content' => $content,
+            // ];
+            // Mail::to($email)->send(new EgumisEmail($mailData));
 
         }
 
