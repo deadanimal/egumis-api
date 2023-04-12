@@ -73,6 +73,7 @@ class AppRfdInfoController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $info = AppRfdInfo::find($id);
 
         if ($info === null) {
@@ -108,10 +109,12 @@ class AppRfdInfoController extends Controller
         }
 
         if ($info->status == '04') {
-            $mailFormat = AppEmailTemplate::where('code', 'ETRFDX')->first();
             $email = SecUser::where('id', $info->user_id)->first()->email;
-            // $email = "sarahnabilah.ct@gmail.com";
-            $content = str_replace('${claimantName}', $info->claimantName, $mailFormat->template_content_my);
+            $mailFormat = AppEmailTemplate::where('code', 'ETSUBS')->first();
+            $content = str_replace('${submitterName}', $info->claimantName, $mailFormat->template_content_my);
+            $content = str_replace('${subInfo.eftNumber}', $info->ref_no, $content);
+            $content = str_replace('${subInfo.totalAmt}', $info->total_claim, $content);
+            $content = str_replace('<a href="http://${egumisURL}" target="_blank">eGUMIS</a>', 'Aplikasi Mobile eGUMIS', $content);
             $mailData = [
                 'name' => $mailFormat->name_my,
                 'template_content' => $content,

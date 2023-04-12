@@ -6,8 +6,11 @@ use App\Http\Requests\StoreSecUserRequest;
 use App\Http\Requests\UpdateSecUserRequest;
 use App\Mail\EgumisEmail;
 use App\Models\AppEmailTemplate;
+use App\Models\AppRfdBo;
 use App\Models\AppRfdInfo;
+use App\Models\AppRfdPayee;
 use App\Models\AppRfdSearchTrx;
+use App\Models\AppRfdStatus;
 use App\Models\SecRole;
 use App\Models\SecUser;
 use App\Models\SecUserEntity;
@@ -22,14 +25,14 @@ class SecUserController extends Controller
 
     public function sendEmail()
     {
-        $mailFormat = AppEmailTemplate::where('code', 'ETSUBQ')->first();
+
+        $mailFormat = AppEmailTemplate::where('code', 'ETSUBS')->first();
         $email = 'noramirulnordin@gmail.com';
-        // return $mailFormat->template_content_my;
+        return $mailFormat->template_content_my;
         $content = str_replace('${submitterName}', 'Amirul', $mailFormat->template_content_my);
         $content = str_replace('${subInfo.eftNumber}', '123123', $content);
         $content = str_replace('${subInfo.totalAmt}', 'RM2000', $content);
         $content = str_replace('<a href="http://${egumisURL}" target="_blank">eGUMIS</a>', 'Aplikasi Mobile eGUMIS', $content);
-        return $content;
         $mailData = [
             'name' => $mailFormat->name_my,
             'template_content' => $content,
@@ -44,24 +47,16 @@ class SecUserController extends Controller
 
     public function test()
     {
-        $info = AppRfdInfo::where('ref_no', 'UMA719082022000001')->first();
-        $info2 = AppRfdInfo::where('ref_no', 'UMA7060423M00096')->first();
 
-//         with(['Payee', 'Doc', 'Bo', 'AppRfdStatus'])->
-// with(['Payee', 'Doc', 'Bo', 'AppRfdStatus'])->
-        return [
-            $info->AppRfdStatus,
-            $info2->AppRfdStatus,
-        ];
-        // $info = AppRfdInfo::where('ref_no', 'UMA7100423M00123')->get();
+        $info = AppRfdInfo::where('ref_no', 'UMA7120423M00137')->get();
 
-        // foreach ($info as $i) {
-        //     AppRfdBo::where('refund_info_id', $i->id)->delete();
-        //     AppRfdPayee::where('refund_info_id', $i->id)->delete();
-        //     AppRfdStatus::where('rfd_id', $i->id)->delete();
-        //     $i->delete();
-        // }
-        // return $info;
+        foreach ($info as $i) {
+            AppRfdBo::where('refund_info_id', $i->id)->delete();
+            AppRfdPayee::where('refund_info_id', $i->id)->delete();
+            AppRfdStatus::where('rfd_id', $i->id)->delete();
+            $i->delete();
+        }
+        return $info;
     }
 
     public function login(Request $request)
