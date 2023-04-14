@@ -33,4 +33,9 @@ class AppRfdInfo extends Model
         return $this->hasOne(AppRfdStatus::class, 'rfd_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(SecUser::class, 'user_id');
+    }
+
 }

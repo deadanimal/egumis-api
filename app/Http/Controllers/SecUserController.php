@@ -11,6 +11,7 @@ use App\Models\AppRfdInfo;
 use App\Models\AppRfdPayee;
 use App\Models\AppRfdSearchTrx;
 use App\Models\AppRfdStatus;
+use App\Models\AuditLogMa;
 use App\Models\SecRole;
 use App\Models\SecUser;
 use App\Models\SecUserEntity;
@@ -82,6 +83,27 @@ class SecUserController extends Controller
         //  $hashedPassword = md5($request->password);
 
         if ($user->password != $hashedPassword) {
+            AuditLogMa::create([
+                "created_by" => $user->id,
+                "created_date" => now(),
+                "menu_url" => "/api/login",
+                "method_name" => "LOGIN FAIL",
+                "description" => "Wrong Password",
+                "descriptionmy" => "Gagal Log Masuk",
+                "modified_by" => $user->id,
+                "modified_date" => now(),
+                "date_logged_in" => now(),
+                "full_name" => $user->full_name,
+                "http_method" => "POST",
+                "ip_address" => request()->ip(),
+                "requested_time" => now(),
+                "requested_url" => "/api/login",
+                "action" => "login",
+                "action_by" => $user->id,
+                "detail" => "Gagal Log Masuk",
+                "entity_id" => $user->id,
+                "entity_name" => $user->username,
+            ]);
             return [
                 'Login Error' => "Username and password does not match",
             ];
@@ -145,8 +167,8 @@ class SecUserController extends Controller
             "company_name" => $request->company_name,
             "country" => $request->country,
             "cpassword" => $hashedPassword,
-            "created_by" => $request->created_by,
-            "created_date" => $request->created_date,
+            "created_by" => "MOBILEAPP",
+            "created_date" => now(),
             "dob" => $request->dob,
             "email" => $request->email,
             "enabled" => 1,
@@ -198,6 +220,28 @@ class SecUserController extends Controller
             ];
 
             Mail::to($email)->send(new EgumisEmail($mailData));
+
+            AuditLogMa::create([
+                "created_by" => $user->id,
+                "created_date" => now(),
+                "menu_url" => "/api/sec-user",
+                "method_name" => "USER REGISTERED",
+                "description" => "user was registered",
+                "descriptionmy" => "User Telah Didaftarkan",
+                "modified_by" => $user->id,
+                "modified_date" => now(),
+                "date_logged_in" => now(),
+                "full_name" => $user->full_name,
+                "http_method" => "POST",
+                "ip_address" => request()->ip(),
+                "requested_time" => now(),
+                "requested_url" => "/api/sec-user",
+                "action" => "register",
+                "action_by" => $user->id,
+                "detail" => "user telah didaftarkan",
+                "entity_id" => $user->id,
+                "entity_name" => $user->username,
+            ]);
 
         }
 
@@ -298,6 +342,28 @@ class SecUserController extends Controller
         ];
 
         Mail::to($email)->send(new EgumisEmail($mailData));
+
+        AuditLogMa::create([
+            "created_by" => $user->id,
+            "created_date" => now(),
+            "menu_url" => "/api/forgot-pass",
+            "method_name" => "FORGOT PASS",
+            "description" => "User Reset Password",
+            "descriptionmy" => "User Set Semula Kata Laluan",
+            "modified_by" => $user->id,
+            "modified_date" => now(),
+            "date_logged_in" => now(),
+            "full_name" => $user->full_name,
+            "http_method" => "POST",
+            "ip_address" => request()->ip(),
+            "requested_time" => now(),
+            "requested_url" => "/api/forgot-pass",
+            "action" => "forgot password",
+            "action_by" => $user->id,
+            "detail" => "User Set Semula Kata Laluan",
+            "entity_id" => $user->id,
+            "entity_name" => $user->username,
+        ]);
 
         return response()->json($new_password);
     }

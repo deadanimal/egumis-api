@@ -30,6 +30,7 @@ class AppRfdInfoController extends Controller
         $ref_no = "UMA7" . $today . "M" . $runningNo;
         $request['ref_no'] = $ref_no;
         $request['email_status'] = "TRUE";
+        $request['created_by'] = "MOBILEAPP";
         $info = AppRfdInfo::create($request->all());
 
         $user = SecUser::find($request->user_id);
@@ -201,7 +202,7 @@ class AppRfdInfoController extends Controller
                 "claimantIdType" => $info['claimanIdType'] ?? null,
                 "claimantName" => $info['claimantName'] ?? null,
                 "country" => $info['country'] ?? null,
-                "created_by" => $info['created_by'] ?? null,
+                "created_by" => "MOBILEAPP",
                 "created_date" => $info['created_date'] ?? null,
                 "email" => $info['email'] ?? null,
                 "email_status" => $info['email_status'] ?? null,
@@ -362,7 +363,7 @@ class AppRfdInfoController extends Controller
                 "claimantIdType" => $info['claimanIdType'] ?? null,
                 "claimantName" => $info['claimantName'] ?? null,
                 "country" => $info['country'] ?? null,
-                "created_by" => $info['created_by'] ?? null,
+                "created_by" => "MOBILEAPP",
                 "created_date" => $info['created_date'] ?? null,
                 "email" => $info['email'] ?? null,
                 "email_status" => $info['email_status'] ?? null,

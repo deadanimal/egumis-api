@@ -170,30 +170,66 @@ class RefBoMasterController extends Controller
             "ip_address" => $request->ip(),
         ]);
 
+        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $model = explode(' ', $user_agent);
+        $os_array = array(
+            '/windows nt 10/i' => 'Windows 10',
+            '/windows nt 6.3/i' => 'Windows 8.1',
+            '/windows nt 6.2/i' => 'Windows 8',
+            '/windows nt 6.1/i' => 'Windows 7',
+            '/windows nt 6.0/i' => 'Windows Vista',
+            '/windows nt 5.2/i' => 'Windows Server 2003/XP x64',
+            '/windows nt 5.1/i' => 'Windows XP',
+            '/windows xp/i' => 'Windows XP',
+            '/windows nt 5.0/i' => 'Windows 2000',
+            '/windows me/i' => 'Windows ME',
+            '/win98/i' => 'Windows 98',
+            '/win95/i' => 'Windows 95',
+            '/win16/i' => 'Windows 3.11',
+            '/macintosh|mac os x/i' => 'Mac OS X',
+            '/mac_powerpc/i' => 'Mac OS 9',
+            '/linux/i' => 'Linux',
+            '/ubuntu/i' => 'Ubuntu',
+            '/iphone/i' => 'iPhone',
+            '/ipod/i' => 'iPod',
+            '/ipad/i' => 'iPad',
+            '/android/i' => 'Android',
+            '/blackberry/i' => 'BlackBerry',
+            '/webos/i' => 'Mobile',
+        );
+
+        foreach ($os_array as $regex => $value) {
+            if (preg_match($regex, $user_agent)) {
+                $os_platform = $value;
+            }
+        }
+
         AuditLogMa::create([
             "created_by" => $user->username,
             "created_date" => now(),
             "menu_name_en" => null,
             "menu_name_ms" => null,
-            "menu_url" => request()->q,
-            "method_name" => null,
-            "description" => null,
+            "menu_url" => "/api/semakan-wtd",
+            "method_name" => 'Carian WTD',
+            "description" => request('ic_carian'),
             "descriptionmy" => null,
             "modified_by" => $user->username,
             "modified_date" => now(),
             "date_logged_in" => null,
             "date_logged_out" => null,
             "full_name" => $user->full_name,
-            "http_method" => null,
+            "http_method" => "POST",
             "ip_address" => $request->ip(),
             "requested_time" => null,
-            "requested_url" => request()->q,
+            "requested_url" => "/api/semakan-wtd",
             "session_id" => null,
             "action" => 'Carian WTD',
             "action_by" => $user->username,
-            "detail" => null,
-            "entity_id" => null,
-            "entity_name" => null,
+            "detail" => "carian kali ke" . $searchedToday,
+            "entity_id" => request('ic_user'),
+            "entity_name" => $user->username,
+            "os" => $os_platform ?? 'unknown',
+            "model" => $model[0] ?? 'unknown',
         ]);
 
         return [

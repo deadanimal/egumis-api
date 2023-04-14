@@ -15,7 +15,7 @@ return [
     |
      */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'sqlsrv'),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,7 +50,7 @@ return [
             'port' => env('DB_PORT', '3306'),
             'database' => "egumisapi",
             'username' => "root",
-            'password' => "egumis",
+            'password' => "P@ssw0rd",
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
