@@ -39,6 +39,20 @@
 <body>
 
     <style>
+        .button {
+            background-color: #1A7FE5;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
         .logo .mobile {
             display: none;
         }

@@ -68,6 +68,43 @@ class WebLaporanController extends Controller
         return view('pelaporan.laporan_gagal_log_masuk', compact('logs'));
     }
 
+    public function carianLaporanGagalLogMasuk(Request $request)
+    {
+        dd($request->all);
+        $laporan = AuditLogMa::with('user');
+
+        if ($request->nama_penuh) {
+            $laporan->where('fullname', 'LIKE', '%' . $request->nama . '%');
+        }
+        if ($request->nama_pengguna) {
+            $laporan->where('entity_name', 'LIKE', '%' . $request->nama_pengguna . '%');
+        }
+        if ($request->status) {
+            $laporan->where('method_name', 'LIKE', '%' . $request->jenis_status . '%');
+        }
+        if ($request->no_ic) {
+            $laporan->where('identity_number', 'LIKE', '%' . $request->no_ic . '%');
+        }
+        if ($request->tempoh) {
+            $laporan->whereDate('created_date', 'LIKE', '%' . $request->tempoh . '%');
+        }
+        if ($request->emel) {
+            $laporan->where('email', 'LIKE', '%' . $request->emel . '%');
+        }
+
+        return $request->jenis_status;
+        return $laporan->get();
+        return view('pelaporan.laporan_gagal_log_masuk', [
+            'logs' => $laporan->get(),
+            'nama' => $request->nama,
+            'nama_pengguna' => $request->nama_pengguna,
+            'status' => $request->status,
+            'identity_number' => $request->no_ic,
+            'tempoh' => $request->tempoh,
+            'emel' => $request->emel,
+        ]);
+    }
+
     public function laporanTuntutanAplikasi()
     {
         $info = AppRfdInfo::where('created_by', "MOBILEAPP")->get();

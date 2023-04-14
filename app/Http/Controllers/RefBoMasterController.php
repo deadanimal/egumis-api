@@ -228,8 +228,9 @@ class RefBoMasterController extends Controller
             "detail" => "carian kali ke" . $searchedToday,
             "entity_id" => request('ic_user'),
             "entity_name" => $user->username,
+            "entity_kp" => $user->identity_number,
             "os" => $os_platform ?? 'unknown',
-            "model" => $model[0] ?? 'unknown',
+            "model" => $model[4] . " " . $model[5] ?? 'unknown',
         ]);
 
         return [

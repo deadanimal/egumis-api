@@ -84,7 +84,7 @@ class SecUserController extends Controller
 
         if ($user->password != $hashedPassword) {
             AuditLogMa::create([
-                "created_by" => $user->id,
+                "created_by" => "MOBILEAPP",
                 "created_date" => now(),
                 "menu_url" => "/api/login",
                 "method_name" => "LOGIN FAIL",
@@ -241,6 +241,7 @@ class SecUserController extends Controller
                 "detail" => "user telah didaftarkan",
                 "entity_id" => $user->id,
                 "entity_name" => $user->username,
+                "entity_kp" => $user->identity_number,
             ]);
 
         }
@@ -344,7 +345,7 @@ class SecUserController extends Controller
         Mail::to($email)->send(new EgumisEmail($mailData));
 
         AuditLogMa::create([
-            "created_by" => $user->id,
+            "created_by" => "MOBILEAPP",
             "created_date" => now(),
             "menu_url" => "/api/forgot-pass",
             "method_name" => "FORGOT PASS",

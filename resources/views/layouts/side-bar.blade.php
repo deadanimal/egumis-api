@@ -41,82 +41,16 @@
         margin-right: 0;
     }
 
-    /* .sidebar{
-        position: -webkit-sticky;
-        position: sticky;
-        top: 0;
-    } */
-
-
-    /* Fixed sidenav, full height */
-    /* .sidenav {
-    height: 100%;
-    width: 200px;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    padding-top: 20px;
-    } */
-    /* Style the sidenav links and the dropdown button */
-    /* .sidenav a, .dropdown-btn {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 20px;
-    color: #818181;
-    display: block;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    outline: none;
-    } */
-
-    /* On mouse-over */
-    /* .sidenav a:hover, .dropdown-btn:hover {
-    color: #f1f1f1;
-    } */
-
-    /* Add an active class to the active dropdown button */
-    /* .active {
-    background-color: green;
-    color: white;
-    } */
-    /* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
-    /* .dropdown-container {
-    display: none;
-    background-color: #262626;
-    padding-left: 8px;
-    } */
-
-    /* Optional: Style the caret down icon */
-    /* .fa-caret-down {
-    float: right;
-    padding-right: 8px;
-    } */
-
-    /* uncomment sini */
-    /* sidebar wrapper for mobile-view */
     .sidebar-wrapper {
         max-width: 400px;
         margin-bottom: 50px;
     }
 
-    /* @media (max-width:991px) {
- .sidebar-wrapper {
-  width: 100%;
-  max-width: 992px;
-  margin-bottom: 0
- }
-    } */
+
     @media screen (min-width:320px) {
         .sidebar-wrapper {
             width: 50%;
             min-width: 320px;
-            /* max-width: 480px; */
             margin-bottom: 0;
         }
     }
@@ -418,9 +352,7 @@
 
     <div class="sidebar-wrapper">
         <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
-            {{-- <div class="navbar-vertical-content scrollbar" id="checklim"> --}}
             <div class="navbar-vertical-content scrollbar perfect-scrollbar">
-                {{-- <ul class="navbar-nav flex-column mb-3" id="navbarVerticalNav"> --}}
                 <ul class="nav flex-column mt-3" id="nav_accordion">
                     <div class="col text-center">
                         <p class="info-sidebar mt-3">Selamat Datang!</p>
@@ -455,7 +387,6 @@
                     <span class="switch mt-4">
                         <form action="" method="">
                             @csrf
-                            {{-- <input type="checkbox" id="switcher"> --}}
                             <input type="checkbox">
                             <label for="switcher"></label>
                         </form>
@@ -544,7 +475,7 @@
                                             <path
                                                 d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
                                         </svg>
-                                        <span class="px-0 {{ Request::is('/audit-trail') ? 'text-dark' : '' }}">&nbsp;
+                                        <span class="px-0 {{ Request::is('/audit-trail') ? 'text-dark' : '' }}">
                                             LAPORAN AUDIT TRAIL</span>
                                     </div>
                                 </a>
@@ -615,12 +546,12 @@
                                                 d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
                                         </svg>
                                         <span class="px-0">&nbsp;
-                                            LAPORAN SEMAKAN WTD</span>
+                                            SEMAKAN WTD</span>
                                     </div>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ Request::is('/pelaporan') ? 'active' : '' }} py-0"
+                                <a class="nav-link {{ Request::is('pelaporan/laporan_gagal_log_masuk') ? 'active' : '' }} py-0"
                                     href="/pelaporan/laporan_gagal_log_masuk">
                                     <div class="d-flex align-items-center nav-link-side">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -630,11 +561,10 @@
                                             <path
                                                 d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
                                         </svg>
-                                        <span style="text-align: justify"
-                                            class="px-0 {{ Request::is('/pelaporan') ? 'text-dark' : '' }}">
-                                            LAPORAN GAGAL LOG MASUK/ <br>
+                                        <span style="text-align: justify" class="px-0">
+                                            GAGAL LOG MASUK/ <br>
                                             SET SEMULA KATA LALUAN/ <br>
-                                            DAFTAR PENGGUNA MELALUI MOBILE APPS <br>
+                                            DAFTAR PENGGUNA <br> MELALUI MOBILE APPS <br>
                                         </span>
                                     </div>
                                 </a>

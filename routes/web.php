@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/carian-semakan-wtd', [WebLaporanController::class, 'carianSemakanWtd']);
 
         Route::get('/laporan_gagal_log_masuk', [WebLaporanController::class, 'laporanGagalLogMasuk']);
+        Route::post('/carian-gagal-log-masuk', [WebLaporanController::class, 'carianLaporanGagalLogMasuk']);
+
         Route::get('/laporan_tuntutan_aplikasi', [WebLaporanController::class, 'laporanTuntutanAplikasi']);
         Route::get('/laporan_tempoh_penggunaan_aplikasi', [WebLaporanController::class, 'laporanTempohPenggunaanAplikasi']);
     });
