@@ -49,7 +49,7 @@ class SecUserController extends Controller
     public function test()
     {
 
-        $info = AppRfdInfo::where('ref_no', 'UMA7120423M00137')->get();
+        $info = AppRfdInfo::where('user_id', '52397')->get();
 
         foreach ($info as $i) {
             AppRfdBo::where('refund_info_id', $i->id)->delete();
@@ -108,6 +108,17 @@ class SecUserController extends Controller
                 'Login Error' => "Username and password does not match",
             ];
         }
+        if ($user->password_modified_date) {
+            $passwordModifiedDate = $user->password_modified_date;
+            $now = now();
+            $daysSincePasswordModified = $now->diffInDays($passwordModifiedDate);
+            if ($daysSincePasswordModified > 60) {
+                return [
+                    'code' => 19,
+                    'massage' => "Password Expired",
+                ];
+            }
+        }
 
         return [
             'Login' => "Succesfull",
@@ -163,7 +174,7 @@ class SecUserController extends Controller
             "address1" => $request->address1,
             "address2" => $request->address2,
             "city" => $request->city,
-            "claimant_type" => $request->claimant_type,
+            "claimant_type" => "IND",
             "company_name" => $request->company_name,
             "country" => $request->country,
             "cpassword" => $hashedPassword,
@@ -178,7 +189,7 @@ class SecUserController extends Controller
             "gender" => $request->gender,
             "home_no" => $request->home_no,
             "identity_number" => $request->identity_number,
-            "identity_type" => $request->identity_type,
+            "identity_type" => $request->identity_type ?? "INDV",
             "last_logged_in_date" => $request->last_logged_in_date,
             "mobile_no" => $request->mobile_no,
             "modified_by" => $request->modified_by,
@@ -285,8 +296,43 @@ class SecUserController extends Controller
                 'Error' => 'User does not exist',
             ];
         }
+        $user->profileUpdated = 1;
 
-        $user->update($request->except(['username', 'email', 'identity_number', 'userEntity_id']));
+        $user->update([
+            "activation_email" => $request->activation_email,
+            "active_code" => $request->active_code,
+            "address1" => $request->address1,
+            "address2" => $request->address2,
+            "city" => $request->city,
+            "claimant_type" => "IND",
+            "company_name" => $request->company_name ?? ' ',
+            "country" => $request->country,
+            "created_by" => "MOBILEAPP",
+            "created_date" => now(),
+            "dob" => $request->dob,
+            "enabled" => 1,
+            "fax_no" => $request->fax_no,
+            "first_login" => $request->first_login,
+            "full_name" => $request->full_name,
+            "gender" => $request->gender,
+            "home_no" => $request->home_no,
+            "identity_number" => $request->identity_number,
+            "identity_type" => "INDV",
+            "last_logged_in_date" => now(),
+            "mobile_no" => $request->mobile_no,
+            "modified_by" => $request->modified_by,
+            "modified_date" => $request->modified_date,
+            "office_no" => $request->office_no ?? ' ',
+            "position" => $request->position ?? '',
+            "postcode" => $request->postcode,
+            "profileUpdated" => 0,
+            "reset_password_email" => $request->reset_password_email,
+            "state" => $request->state,
+            "username" => $request->username,
+            "address3" => $request->address3,
+            "search_count" => 0,
+            "aoCode" => $request->aoCode,
+        ]);
         return response()->json($user);
 
     }
@@ -299,12 +345,21 @@ class SecUserController extends Controller
      */
     public function destroy($id)
     {
-        $user = SecUser::find($id);
+        $user = SecUser::where('email', $id)->first();
         if ($user === null) {
             return [
                 'Error' => 'User does not exist',
             ];
         }
+        $info = AppRfdInfo::where('user_id', $user->id)->get();
+        foreach ($info as $i) {
+            AppRfdBo::where('refund_info_id', $i->id)->delete();
+            AppRfdPayee::where('refund_info_id', $i->id)->delete();
+            AppRfdStatus::where('rfd_id', $i->id)->delete();
+            $i->delete();
+        }
+        SecUserRole::where('user_id', $user->id)->delete();
+
         $user->delete();
         return [
             'Delete' => "Successful",

@@ -116,4 +116,9 @@ class WebLaporanController extends Controller
         return view('pelaporan.laporan_tempoh_penggunaan_aplikasi');
     }
 
+    public function laporanPermohonanWtd()
+    {
+        return view('pelaporan.laporan_permohonan_wtd');
+    }
+
 }

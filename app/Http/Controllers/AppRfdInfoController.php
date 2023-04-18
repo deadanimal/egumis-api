@@ -31,6 +31,7 @@ class AppRfdInfoController extends Controller
         $request['ref_no'] = $ref_no;
         $request['email_status'] = "TRUE";
         $request['created_by'] = "MOBILEAPP";
+
         $info = AppRfdInfo::create($request->all());
 
         $user = SecUser::find($request->user_id);
@@ -179,7 +180,7 @@ class AppRfdInfoController extends Controller
 
     public function searchByUserId()
     {
-        $wtd = AppRfdInfo::where('user_id', request('user_id'))->get();
+        $wtd = AppRfdInfo::with(['Bo','Payee'])->where('user_id', request('user_id'))->get();
         if ($wtd === null) {
             return [
                 "Error" => "Data Not found",
