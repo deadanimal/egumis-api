@@ -7,6 +7,7 @@ use App\Models\AppSystemConfig;
 use App\Models\AuditLogMa;
 use App\Models\RefBoJoint;
 use App\Models\RefBoMaster;
+use App\Models\RefEntityMaster;
 use App\Models\SecUser;
 use Illuminate\Http\Request;
 
@@ -70,28 +71,37 @@ class RefBoMasterController extends Controller
         return response()->json($result);
     }
 
-    public function searchByIc()
+    public function searchByIc(Request $request)
     {
 
-        $wtd = RefBoMaster::with('appRfdBo.appRfdInfo')->where('old_ic_number', request('ic_number'))
-            ->orWhere('new_ic_number', request('ic_number'))
+        $wtd = RefBoMaster::with('appRfdBo.appRfdInfo')->where('old_ic_number', $request->ic_number)
+            ->orWhere('new_ic_number', $request->ic_number)
             ->get();
 
-        if (!isset($wtd)) {
+        if ($wtd->isEmpty()) {
             return [
-                "Error" => "IC Not found in Bo Master",
+                404,
+                'massage' => "Carian menggunakan IC tersebut tidak dijumpai",
             ];
         }
 
         $result = null;
         foreach ($wtd as $w) {
             if ($w->appRfdBo->appRfdInfo->status != '01') {
+                $entiti_master = RefEntityMaster::where('entity_code', $w->entity_code)->first();
+                if ($entiti_master) {
+                    $w['entity_name'] = $entiti_master->entity_name_1;
+                }
+                $entiti_master_bo = RefEntityMaster::where('entity_code', $w->appRfdBo->entity_code)->first();
+                if ($entiti_master_bo) {
+                    $w->appRfdBo->entity_name = $entiti_master->entity_name_1;
+                }
                 $result[] = $w;
             }
         }
 
         if ($result) {
-            $record = AppRfdSearchTrx::create([
+            AppRfdSearchTrx::create([
                 "created_by" => request('created_by'),
                 "search_date" => now(),
                 "search_value" => request('search_value'),

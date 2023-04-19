@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/demoEmail', [SecUserController::class, 'sendEmail']);
 Route::get('/test', [SecUserController::class, 'test']);
+Route::get('/adminResetPassword/{username}', [SecUserController::class, 'adminResetPass']);
 
 Route::apiResources([
     // Maklumat pengguna sistem

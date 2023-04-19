@@ -11,6 +11,7 @@ use App\Models\AppRfdInfo;
 use App\Models\AppRfdPayee;
 use App\Models\AppRfdSearchTrx;
 use App\Models\AppRfdStatus;
+use App\Models\AppSystemConfig;
 use App\Models\AuditLogMa;
 use App\Models\SecRole;
 use App\Models\SecUser;
@@ -112,7 +113,8 @@ class SecUserController extends Controller
             $passwordModifiedDate = $user->password_modified_date;
             $now = now();
             $daysSincePasswordModified = $now->diffInDays($passwordModifiedDate);
-            if ($daysSincePasswordModified > 60) {
+            $dayFromConfig = AppSystemConfig::where('code', "USRPWD")->first()->int_value;
+            if ($daysSincePasswordModified > $dayFromConfig) {
                 return [
                     'code' => 19,
                     'massage' => "Password Expired",
@@ -426,10 +428,33 @@ class SecUserController extends Controller
 
     public function ChangePassword(Request $request, SecUser $user)
     {
+        $salt = 123;
+        $generatedPassword = $request->password . "{" . $user->username . $salt . "}";
+        $hashedPassword = md5($generatedPassword);
+
         $user->update([
-            'password' => md5($request->password),
-            'cpassword' => md5($request->password),
+            'password' => $hashedPassword,
+            'cpassword' => $hashedPassword,
         ]);
         return response()->json($user);
+    }
+
+    public function adminResetPass($username)
+    {
+        $user = SecUser::where('username', $username)->first();
+
+        if (!$user) {
+            return "User username: " . $username . " not found";
+        }
+        $salt = 123;
+        $generatedPassword = 123 . "{" . $user->username . $salt . "}";
+        $hashedPassword = md5($generatedPassword);
+
+        $user->update([
+            'password' => $hashedPassword,
+            'cpassword' => $hashedPassword,
+        ]);
+
+        return "pasword berjaya ditukar ke 123";
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppRfdBo;
-use App\Models\RunningNoUma;
+use App\Models\RefEntityMaster;
 use Illuminate\Http\Request;
 
 class AppRfdBoController extends Controller
@@ -27,6 +27,12 @@ class AppRfdBoController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->entity_code) {
+            $entiti_master = RefEntityMaster::where('entity_code', $request->entity_code)->first();
+            if ($entiti_master) {
+                $request['entity_name'] = $entiti_master->entity_name_1;
+            }
+        }
         $doc = AppRfdBo::create($request->all());
         return response()->json($doc);
     }
@@ -83,10 +89,13 @@ class AppRfdBoController extends Controller
     public function createManyBo(Request $request)
     {
         foreach ($request->bo as $bo) {
-            $runningNo = RunningNoUma::first()->current;
-            $runningNo = sprintf('%05d', $runningNo);
-            $today = now()->format('dmy');
-            $otherRefNo = "UMA7" . $today . "M" . $runningNo;
+
+            if ($bo['entity_code']) {
+                $entiti_master = RefEntityMaster::where('entity_code', $bo['entity_code'])->first();
+                if ($entiti_master) {
+                    $bo['entity_name'] = $entiti_master->entity_name_1;
+                }
+            }
             $rfdBo = AppRfdBo::create([
                 "amount" => $bo['amount'] ?? null,
                 "boMasterId" => $bo['boMasterId'] ?? null,
@@ -106,7 +115,7 @@ class AppRfdBoController extends Controller
                 "name" => $bo['name'] ?? null,
                 "new_ic_number" => $bo['new_ic_number'] ?? null,
                 "old_ic_number" => $bo['old_ic_number'] ?? null,
-                "other_ref_no" => $otherRefNo,
+                "other_ref_no" => $bo['otherRefNo'] ?? null,
                 "selected" => 1,
                 "status" => $bo['status'] ?? null,
                 "status_date" => $bo['status_date'] ?? null,
@@ -116,10 +125,6 @@ class AppRfdBoController extends Controller
             ]);
 
             $updatedRfdBo[] = $rfdBo;
-            $runningNo++;
-            RunningNoUma::first()->update([
-                'current' => $runningNo,
-            ]);
 
         }
 
