@@ -393,9 +393,9 @@
                     </span>
 
                     <li class="nav-item mx-3 mx-md-0 mt-3">
-                        <a class="nav-link py-0 {{ Request::is('pengurusan-pengguna/daftar-pengguna/*') ? 'active-main' : '' }}"
+                        <a class="nav-link py-0 {{ Request::is('pengurusan-pengguna/*') ? 'active-main' : '' }}"
                             href="/pengurusan-pengguna/daftar-pengguna" role="button" data-bs-toggle="collapse"
-                            aria-expanded="{{ Request::is('/pengurusan-pengguna/daftar-pengguna') ? 'true' : 'false' }}"
+                            aria-expanded="{{ Request::is('/pengurusan-pengguna/*') ? 'true' : 'false' }}"
                             aria-controls="/pengurusan-pengguna/daftar-pengguna">
                             <div class="d-flex align-items-center nav-link-side px-0">
                                 <span class="px-3"><svg xmlns="http://www.w3.org/2000/svg" width="16"
@@ -407,10 +407,10 @@
                                     </svg> PENGURUSAN PENGGUNA</span>
                             </div>
                         </a>
-                        <ul class="nav-item collapse {{ Request::is('pengurusan-pengguna/daftar-pengguna/*') || Request::is('pengurusan-pengguna/daftar-pengguna') ? 'show' : 'false' }} my-1"
+                        <ul class="nav-item collapse {{ Request::is('pengurusan-pengguna/daftar-pengguna') ? 'show' : 'false' }} my-1"
                             id="pengurusan-pengguna/daftar-pengguna" style="list-style: none;">
                             <li class="nav-item has-submenu">
-                                <a class="nav-link {{ Request::is('/pengurusan-pengguna/daftar-pengguna/*') ? 'active' : '' }} py-0"
+                                <a class="nav-link {{ Request::is('pengurusan-pengguna/daftar-pengguna') ? 'active' : '' }} py-0"
                                     href="/pengurusan-pengguna/daftar-pengguna">
                                     <div class="d-flex align-items-center nav-link-side">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

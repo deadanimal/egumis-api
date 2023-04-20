@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('/pengurusan-pengguna')->group(function () {
         Route::get('/daftar-pengguna', [ProfileController::class, 'daftar_pengguna']);
+        Route::get('/daftar-pengguna', [ProfileController::class, 'simpan_pengguna'])->name('daftar');
         Route::get('/senarai-pengguna', [ProfileController::class, 'senarai_pengguna']);
     });
 
