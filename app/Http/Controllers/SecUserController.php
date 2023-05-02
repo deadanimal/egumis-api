@@ -290,7 +290,7 @@ class SecUserController extends Controller
      * @param  \App\Models\SecUser  $secUser
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateSecUserRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $user = SecUser::find($id);
         if ($user === null) {
@@ -298,7 +298,6 @@ class SecUserController extends Controller
                 'Error' => 'User does not exist',
             ];
         }
-        $user->profileUpdated = 1;
 
         $user->update([
             "activation_email" => $request->activation_email,
@@ -327,7 +326,7 @@ class SecUserController extends Controller
             "office_no" => $request->office_no ?? ' ',
             "position" => $request->position ?? '',
             "postcode" => $request->postcode,
-            "profileUpdated" => 0,
+            "profileUpdated" => $request->profileUpdated,
             "reset_password_email" => $request->reset_password_email,
             "state" => $request->state,
             "username" => $request->username,
