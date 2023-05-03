@@ -45,5 +45,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan_tempoh_penggunaan_aplikasi', [WebLaporanController::class, 'laporanTempohPenggunaanAplikasi']);
 
         Route::get('/laporan_permohonan_wtd', [WebLaporanController::class, 'laporanPermohonanWtd']);
+        Route::post('/carian_permohonan_wtd', [WebLaporanController::class, 'carianPermohonanWtd']);
     });
 });

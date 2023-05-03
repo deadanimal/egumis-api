@@ -24,8 +24,8 @@ class AppRfdInfoController extends Controller
 
     public function store(Request $request)
     {
-        $runningNo = RunningNoUma::first()->current;
-        $runningNo = sprintf('%05d', $runningNo);
+        $runningNoOld = RunningNoUma::first()->current;
+        $runningNo = sprintf('%05d', $runningNoOld);
         $today = now()->format('dmy');
         $ref_no = "UMA7" . $today . "M" . $runningNo;
         $request['ref_no'] = $ref_no;
@@ -57,6 +57,11 @@ class AppRfdInfoController extends Controller
             "verify_by" => null,
         ]);
         $info['AppRfdStatus'] = $status;
+
+        RunningNoUma::first()->update([
+            'current'=>$runningNoOld+1,
+        ]);
+
         return response()->json($info);
     }
 

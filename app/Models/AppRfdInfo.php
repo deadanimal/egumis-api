@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Carbon;
 
 class AppRfdInfo extends Model
 {
@@ -12,6 +14,7 @@ class AppRfdInfo extends Model
     public $table = 'APP_RFD_INFO';
     public $timestamps = false;
     // protected $with = ['AppRfdStatus'];
+    
 
     public function Payee()
     {
@@ -37,5 +40,12 @@ class AppRfdInfo extends Model
     {
         return $this->belongsTo(SecUser::class, 'user_id');
     }
+
+    // protected function createDate(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn ($value) => (new Carbon($value))->format('Y-m-d'),
+    //     );
+    // }
 
 }

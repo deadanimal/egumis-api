@@ -570,7 +570,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ Request::is('/pelaporan') ? 'active' : '' }} py-0"
+                                <a class="nav-link {{ Request::is('pelaporan/laporan_tuntutan_aplikasi') ? 'active' : '' }} py-0"
                                     href="/pelaporan/laporan_tuntutan_aplikasi">
                                     <div class="d-flex align-items-center nav-link-side">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -580,14 +580,14 @@
                                             <path
                                                 d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
                                         </svg>
-                                        <span class="px-0 {{ Request::is('/pelaporan') ? 'text-dark' : '' }}">LAPORAN
+                                        <span class="px-0 ">LAPORAN
                                             PERMOHONAN <br>
                                             TUNTUTAN MELALUI APLIKASI MUDAH ALIH</span>
                                     </div>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ Request::is('/pelaporan') ? 'active' : '' }} py-0"
+                                <a class="nav-link {{ Request::is('pelaporan/laporan_permohonan_wtd') ? 'active' : '' }} py-0"
                                     href="/pelaporan/laporan_permohonan_wtd">
                                     <div class="d-flex align-items-center nav-link-side">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"

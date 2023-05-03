@@ -2,26 +2,6 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css">
 
-<style>
-    .button {
-        background-color: #1A7FE5;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        padding: 5px 10px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-    }
-
-    .button:hover {
-        background-color: #1A7FE5;
-        color: white;
-    }
-</style>
 @section('content')
     <h1 style="color: #003478;">LAPORAN PERMOHONAN TUNTUTAN WTD MENGIKUT NEGERI</h1>
 
@@ -29,15 +9,14 @@
 
 
     <div class="container-fluid">
-        <form action="/carian-permohonan-wtd" method="POST">
+        <form action="/pelaporan/carian_permohonan_wtd" method="POST">
             @csrf
             <div class="row mx-2 mb-2 mt-5">
                 <div class="col-2 mb-2">
                     <label class="col-form-label text-black">Tempoh:</label>
                 </div>
                 <div class="col-4 mb-2">
-                    <input placeholder="SILA PILIH" class="form-control textbox-n" type="text"
-                        onfocus="(this.type='date')" onblur="(this.type='text')" id="date" />
+                    <input placeholder="SILA PILIH" class="form-control textbox-n" type="text" name="tempoh" onfocus="(this.type='date')" value="{{ $tempoh == '01-01-1970' ? '' : $tempoh }}"/>
                 </div>
                 <div class="col-2 mb-2">
                     <label class="col-form-label text-black">Negeri:</label>
@@ -55,22 +34,33 @@
                     <label class="col-form-label text-black">No. Pengenalan:</label>
                 </div>
                 <div class="col-4 mb-2">
-                    <input class="form-control" name="no_ic" type="number" placeholder="TAIP DI SINI" />
+                    <input class="form-control" name="no_ic" type="number" placeholder="TAIP DI SINI" value="{{$no_ic ?? ''}}"/>
                 </div>
                 <div class="col-2 mb-2">
                     <label class="col-form-label text-black">Jenis Status:</label>
                 </div>
                 <div class="col-4 mb-2">
                     <select class="form-select" aria-label="Default select example" name="status">
-                        <option selected disabled>SILA PILIH</option>
-                        <option value="Deraf">Deraf</option>
-                        <option value="Pengesahan Dokumen 1">Pengesahan Dokumen 1</option>
-                        <option value="Kuiri Dokumen 1">Kuiri Dokumen 1</option>
-                        <option value="Pengesahan Dokumen 2">Pengesahan Dokumen 2</option>
-                        <option value="Kuiri Dokumen 2">Kuiri Dokumen 2</option>
-                        <option value="Baharu">Baharu</option>
-                        <option value="Selesai">Selesai</option>
-                        <option value="Kuiri">Kuiri</option>
+                        <option selected disabled hidden>SILA PILIH</option>
+                        @if ($status)
+                        <option @selected($status == "01") value="01">Draf</option>
+                        <option @selected($status == "02") value="02">Baharu</option>
+                        <option @selected($status == "03") value="03">Kuiri</option>
+                        <option @selected($status == "04") value="04">Pengesahan Dokumen 1</option>
+                        <option @selected($status == "05") value="05">Kuiri Dokumen 1</option>
+                        <option @selected($status == "06") value="06">Pengesahan Dokumen 2</option>
+                        <option @selected($status == "07") value="07">Kuiri Dokumen 2</option>
+                        <option @selected($status == "11") value="11">Selesai</option>
+                        @else
+                        <option value="01">Draf</option>
+                        <option value="02">Baharu</option>
+                        <option value="03">Kuiri</option>
+                        <option value="04">Pengesahan Dokumen 1</option>
+                        <option value="05">Kuiri Dokumen 1</option>
+                        <option value="06">Pengesahan Dokumen 2</option>
+                        <option value="07">Kuiri Dokumen 2</option>
+                        <option value="11">Selesai</option>
+                        @endif
                     </select>
                 </div>
             </div>
@@ -79,7 +69,7 @@
                     <label class="col-form-label text-black">No. Rujukan:</label>
                 </div>
                 <div class="col-4 mb-2">
-                    <input class="form-control" name="fileref_no" type="number" placeholder="TAIP DI SINI" />
+                    <input class="form-control" name="no_rujukan" type="text" placeholder="TAIP DI SINI" value="{{$no_rujukan??''}}"/>
                 </div>
                 <div class="col mb-2">
                     <button class="btn btn-secondary">Cari
@@ -107,7 +97,7 @@
     <div class="card mt-6">
         <div class="card-body">
             <div class="table-responsive scrollbar">
-                <table class="table line-table mt-6" style="width:100%">
+                <table class="table line-table mt-6 datatable" style="width:100%">
                     <thead class="text-black">
                         <tr>
                             <th class="text-center">Bil.</th>
@@ -115,28 +105,53 @@
                             <th class="text-center">Nama Penuh</th>
                             <th class="text-center">No. Pengenalan</th>
                             <th class="text-center">Negeri</th>
-                            <th class="text-center">Bil Empunya</th>
+                            {{-- <th class="text-center">Bil Empunya</th> --}}
                             <th class="text-center">Amaun Tuntutan (RM)</th>
                             <th class="text-center">Tarikh Tuntutan</th>
                             <th class="text-center">Status</th>
                         </tr>
                     <tbody id="myPermohonanWTDNegeri">
-                        {{-- @foreach ($negeri as $n) 
-                                <tr>
-                                    <td>{{$n->id}}</td>
-                                    <td>{{$n->file_refno}}</td>
-                                    <td>{{$n->name}}</td>
-                                    <td>
-                                        {{$n->new_ic_number}}
-                                        {{$n->old_ic_number}}
-                                    </td>
-                                    <td>{{$n->state}}</td>
-                                    <td>{{$n->date_logged_in}}</td>
-                                    <td>{{$n->date_logged_out}}</td>
-                                    <td>{{$n->requested_time}}</td>
-                                    <td>{{$n->requested_url}}</td>
-                                </tr>
-                            @endforeach --}}
+                    @foreach ($permohonanWTD as $pWTD)
+                        <tr>
+                            <td>{{$loop->iteration}}</td>
+                            <td>{{$pWTD->ref_no}}</td>
+                            <td>{{$pWTD->claimantName}}</td>
+                            <td>{{$pWTD->id_no}}</td>
+                            <td>{{$pWTD->nama_region}}</td>
+                            {{-- <td>0</td> --}}
+                            <td>{{$pWTD->total_claim}}</td>
+                            <td>{{$pWTD->created_date}}</td>
+                            <td>
+                            @switch($pWTD->status)
+                                @case(01)
+                                    Draf
+                                    @break
+                                @case(02)
+                                    Baharu
+                                    @break
+                                @case(03)
+                                    Kuiri
+                                    @break
+                                @case(04)
+                                    Pengesahan Dokumen 1
+                                    @break
+                                @case(05)
+                                    Kuiri Dokumen 1
+                                    @break
+                                @case(06)
+                                    Pengesahan Dokumen 2
+                                    @break
+                                @case(07)
+                                    Kuiri Dokumen 2
+                                    @break
+                                @case(11)
+                                    Selesai
+                                    @break
+                                @default
+                            @endswitch
+                            </td>
+                        </tr>
+                    @endforeach
                     </tbody>
                     </thead>
                 </table>
