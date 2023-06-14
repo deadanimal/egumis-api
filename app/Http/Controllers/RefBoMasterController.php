@@ -161,7 +161,7 @@ class RefBoMasterController extends Controller
             'search_count' => $searchedToday,
         ]);
 
-        $BoMaster = RefBoMaster::with('entity','appRfdBo.appRfdInfo.AppRfdStatus')->where('old_ic_number', request('ic_carian'))
+        $BoMaster = RefBoMaster::with('appRfdBo.appRfdInfo.AppRfdStatus')->where('old_ic_number', request('ic_carian'))
             ->orWhere('new_ic_number', request('ic_carian'))
             ->get();
 
