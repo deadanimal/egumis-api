@@ -14,9 +14,4 @@ class RefBoMaster extends Model
     {
         return $this->hasOne(AppRfdBo::class, 'boMasterId');
     }
-    
-    public function entity()
-    {
-        return $this->belongsTo(RefEntityMaster::class, 'entity_code', 'entity_code');
-    }
 }
