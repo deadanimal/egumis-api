@@ -122,15 +122,6 @@ class RefBoMasterController extends Controller
 
     public function semakanWtd(Request $request)
     {
-        $BoMaster = RefBoMaster::with('appRfdBo.appRfdInfo.AppRfdStatus')
-            ->with(['appRfdBo' => function($q){
-                $q->select('entity_name');
-            }])
-            ->where('old_ic_number', request('ic_carian'))
-            ->orWhere('new_ic_number', request('ic_carian'))
-            ->get();
-        dd($BoMaster);
-        
         $maxSearch = AppSystemConfig::where('code', 'SRCMAX')->first();
 
         if (!$request->ic_user) {
@@ -170,7 +161,7 @@ class RefBoMasterController extends Controller
             'search_count' => $searchedToday,
         ]);
 
-        $BoMaster = RefBoMaster::with('appRfdBo.appRfdInfo.AppRfdStatus')->where('old_ic_number', request('ic_carian'))
+        $BoMaster = RefBoMaster::with('appRfdBo','appRfdBo.appRfdInfo.AppRfdStatus')->where('old_ic_number', request('ic_carian'))
             ->orWhere('new_ic_number', request('ic_carian'))
             ->get();
 
